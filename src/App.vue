@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import Map from './components/Map.vue';
+import Home from './pages/Home.vue';
+
 </script>
 
 <template>
-  <Map/>
+  <Home/>
 </template>
 
 <style scoped>

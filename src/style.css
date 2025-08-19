@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+.normal-behavior{
+  pointer-events: all;
+  /* user-select: all; */
+}
