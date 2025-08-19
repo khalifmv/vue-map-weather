@@ -1,13 +1,23 @@
 import { defineStore } from 'pinia'
 
+interface userInfoStore {
+  locationAllowed: Boolean
+  coor: [number, number]
+  locationHistory: []
+}
 export const useUserInfoStore = defineStore('userInfo', {
-  state: () => {
+  state: () :userInfoStore => {
     return {
-      coor: [0,0] as [number, number]
+      locationAllowed: false,
+      coor: [0,0],
+      locationHistory: []
     }
   },
 
   actions: {
+    changeLocationAllowed(e: Boolean){
+      this.locationAllowed = e
+    },
     updateCoor(e: [number, number]){
       this.coor = e
     }
