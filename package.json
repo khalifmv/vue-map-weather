@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
-    "@tanstack/vue-query": "^5.85.3",
+    "@tanstack/vue-query": "^5.85.5",
     "pinia": "^3.0.3",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",

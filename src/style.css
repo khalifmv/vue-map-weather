@@ -4,3 +4,7 @@
   pointer-events: all;
   /* user-select: all; */
 }
+
+body{
+  scrollbar-width: none;
+}

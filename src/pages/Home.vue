@@ -6,7 +6,7 @@ import MyLocationCard from "../components/MyLocationCard.vue";
 
 <template>
   <div class="h-screen w-screen relative overflow-hidden">
-    <div class="absolute top-0 right-0 h-screen sidebar-wrapper min-w-[260px]">
+    <div class="absolute top-0 right-0 h-screen sidebar-wrapper min-w-[360px]">
       <div class="relative w-full h-full">
         <div class="bg-sidebar w-full h-full"></div>
         <div class="absolute top-0 left-0 w-full p-4 normal-behavior flex flex-col gap-3 h-full">
