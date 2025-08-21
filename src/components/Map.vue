@@ -18,29 +18,49 @@ const circle = ref({
 })
 let activeMarker = null;
 
+async function fetchWeather({ lat, long }) {
+    const url = `https://openapi.de4a.space/api/weather/forecast?lat=${lat}&long=${long}`;
+    const res = await fetch(url);
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch weather");
+    }
+    return res.json();
+}
+
 onMounted(async () => {
     const userLocation = await getUserLocation();
     if (userLocation) {
-        const arrLatLong = [userLocation.latitude, userLocation.longitude]
-        center.value = arrLatLong
-        userInfo.updateCoor(arrLatLong)
+        const arrLatLong = [userLocation.latitude, userLocation.longitude];
+        center.value = arrLatLong;
+        userInfo.updateCoor(arrLatLong);
         await nextTick();
         zoom.value = 12;
         circle.value = {
             center: latLng(arrLatLong[0], arrLatLong[1]),
-            radius: 2000
-        }
+            radius: 2000,
+        };
         const checkMap = setInterval(() => {
             if (mapRef.value?.leafletObject) {
                 const map = mapRef.value.leafletObject;
                 console.log("Leaflet map instance:", map);
 
                 map.doubleClickZoom.disable();
-                map.on("dblclick", (e) => {
+                map.on("dblclick", async (e) => {
                     console.log("User double clicked at:", e.latlng);
-                    markerLatLng.value = [e.latlng.lat, e.latlng.lng]
+                    markerLatLng.value = [e.latlng.lat, e.latlng.lng];
+                    try {
+                        const weather = await fetchWeather({
+                            lat: e.latlng.lat,
+                            long: e.latlng.lng,
+                        });
+                        console.log("Weather data:", weather);
+                        userInfo.addLocationHistory(weather.data[0]);
+                    } catch (error) {
+                        console.error("Error fetching weather:", error);
+                    }
                 });
-                
+
                 map.flyTo(center.value, zoom.value);
                 clearInterval(checkMap);
             }

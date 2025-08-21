@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
+import type { LocationData } from '../types/User'
 
 interface userInfoStore {
   locationAllowed: Boolean
   coor: [number, number]
-  locationHistory: []
+  locationHistory: LocationData[]
 }
 export const useUserInfoStore = defineStore('userInfo', {
   state: () :userInfoStore => {
@@ -20,6 +21,12 @@ export const useUserInfoStore = defineStore('userInfo', {
     },
     updateCoor(e: [number, number]){
       this.coor = e
+    },
+    addLocationHistory(e: LocationData){
+      this.locationHistory.push(e)
+    },
+    clearLocationHistory(){
+      this.locationHistory = []
     }
   }
 })
