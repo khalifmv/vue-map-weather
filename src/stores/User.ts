@@ -5,25 +5,38 @@ interface userInfoStore {
   locationAllowed: Boolean
   coor: [number, number]
   locationHistory: LocationData[]
+  loadingGetLocation: Boolean
 }
 export const useUserInfoStore = defineStore('userInfo', {
   state: () :userInfoStore => {
     return {
       locationAllowed: false,
       coor: [0,0],
-      locationHistory: []
+      locationHistory: [],
+      loadingGetLocation: false
     }
   },
-
+  getters: {
+    reverseLocationHistory: (state) => state.locationHistory.reverse()
+  },
   actions: {
-    changeLocationAllowed(e: Boolean){
-      this.locationAllowed = e
+    changeLocationAllowed(data: Boolean){
+      this.locationAllowed = data
     },
-    updateCoor(e: [number, number]){
-      this.coor = e
+    updateCoor(data: [number, number]){
+      this.coor = data
     },
-    addLocationHistory(e: LocationData){
-      this.locationHistory.push(e)
+    setLoadingOfGetLocation(status: Boolean){
+      this.loadingGetLocation = status
+    },
+    addLocationHistory(data: LocationData){
+      this.locationHistory.push(data)
+    },
+    updateLocationHistory(idx: number, data: LocationData){
+      this.locationHistory[idx] = data
+    },
+    deleteLocationHistory(idx: number){
+      this.locationHistory = this.locationHistory.filter((_,y)=>y!==idx)
     },
     clearLocationHistory(){
       this.locationHistory = []

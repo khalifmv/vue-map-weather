@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Card from './ui/Card.vue';
 import Title from './ui/Title.vue';
-import { computed, watch } from "vue"
+import { computed } from "vue"
 import { useUserInfoStore } from '../stores/User';
 import { useQuery } from "@tanstack/vue-query";
 import WeatherCard from './WeatherCard.vue';
@@ -12,7 +12,7 @@ const userInfo = useUserInfoStore()
 //   long: userInfo.coor[1]
 // }));
 
-async function fetchWeather({ queryKey }: { queryKey: any }) {
+async function fetchWeather() {
 
   const url = `https://openapi.de4a.space/api/weather/forecast?lat=${userInfo.coor[0]}&long=${userInfo.coor[1]}`;
   const res = await fetch(url);

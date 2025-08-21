@@ -50,13 +50,16 @@ onMounted(async () => {
                     console.log("User double clicked at:", e.latlng);
                     markerLatLng.value = [e.latlng.lat, e.latlng.lng];
                     try {
+                        userInfo.setLoadingOfGetLocation(true)
                         const weather = await fetchWeather({
                             lat: e.latlng.lat,
                             long: e.latlng.lng,
                         });
                         console.log("Weather data:", weather);
+                        userInfo.setLoadingOfGetLocation(false)
                         userInfo.addLocationHistory(weather.data[0]);
                     } catch (error) {
+                        userInfo.setLoadingOfGetLocation(false)
                         console.error("Error fetching weather:", error);
                     }
                 });

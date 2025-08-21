@@ -12,6 +12,7 @@ const locationHistory = computed(() => [...userInfo.locationHistory].reverse())
   <Card class="w-full flex flex-col bg-gray-200 border border-white h-full max-h-[650px] overflow-y-auto">
     <Title :size="'sm'">Riwayat lokasi</Title>
     <div class="mt-4">
+      <div v-if="userInfo.loadingGetLocation">Loading</div>
       <div v-for="value in locationHistory" :key="value.location.latitide" class="p-2 rounded-lg bg-white mb-2 flex flex-col gap-1">
         <div class="flex justify-between items-center">
           <div class="font-bold"><Title :size="'md'">{{ value.location.city }}</Title></div>
