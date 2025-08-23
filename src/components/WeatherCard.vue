@@ -13,15 +13,19 @@ function formatDate(dateString: string): string {
 </script>
 
 <template>
-    <div class="p-2 bg-blue-100 rounded-lg min-w-[120px] min-h-[100px] flex flex-col gap-1">
-        <p class="text-xs">{{ formatDate(props.weather.local_datetime) }}</p>
-        <div class="flex flex-col justify-center items-center my-4">
-            <img :src="props.weather.image" class="w-10 h-10" />
-            <div class="flex flex-col items-center mb-4">
-                <p class="font-bold">{{ props.weather.weather_desc }}</p>
-                <p class="font-light text-xs">{{ props.weather.weather_desc_en }}</p>
+    <div class="p-2 bg-blue-100 rounded-lg min-w-[150px] min-h-[100px] flex flex-col gap-1">
+        
+        <div class="flex justify-evenly items-center my-4 gap-2">
+            <img :src="props.weather.image" class="w-12 h-12" />
+            <div class="flex flex-col items-start">
+                <p class="text-xs">{{ formatDate(props.weather.local_datetime) }}</p>
+                <p class="font-bold text-xl">{{ props.weather.t }} ℃</p>
+                <div class="flex flex-col items-start mb-4 gap-0">
+                    <p class="">{{ props.weather.weather_desc }}</p>
+                    <p class="font-light text-xs">{{ props.weather.weather_desc_en }}</p>
+                </div>
+                
             </div>
-            <p class="font-bold text-xl">{{ props.weather.t }} ℃</p>
         </div>
         <div class="flex flex-col gap-0">
             <div class="text-[10px] flex gap-1">
