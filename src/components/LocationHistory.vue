@@ -28,7 +28,10 @@ const locationHistory = computed(() => [...userInfo.locationHistory].reverse())
         </div>
         <div class="flex flex-col gap-1">
           <p class="text-sm">{{ value.location.subdistrict }} - {{ value.location.village }}</p>
-          <p class="text-2xl font-bold">{{ value.weather[0][0].t }}  ℃</p>
+          <div class="flex gap-2 items-center">
+            <img :src="value.weather[0][0].image" class="w-8 h-8" />
+            <p class="text-2xl font-bold">{{ value.weather[0][0].t }}  ℃</p>
+          </div>
         </div>
         
       </div>

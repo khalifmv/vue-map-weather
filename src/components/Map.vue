@@ -5,6 +5,7 @@ import {L, latLng} from 'leaflet'
 import { LMap, LTileLayer, LMarker, LCircle } from "@vue-leaflet/vue-leaflet";
 import { getUserLocation } from "../helper/GetUserLocation";
 import { useUserInfoStore } from '../stores/User';
+import { fetchWeather } from "../api/weather";
 
 const userInfo = useUserInfoStore()
 
@@ -17,16 +18,6 @@ const circle = ref({
     radius: 40
 })
 let activeMarker = null;
-
-async function fetchWeather({ lat, long }) {
-    const url = `https://openapi.de4a.space/api/weather/forecast?lat=${lat}&long=${long}`;
-    const res = await fetch(url);
-
-    if (!res.ok) {
-        throw new Error("Failed to fetch weather");
-    }
-    return res.json();
-}
 
 onMounted(async () => {
     const userLocation = await getUserLocation();

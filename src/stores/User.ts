@@ -3,7 +3,7 @@ import type { LocationData } from '../types/User'
 
 interface userInfoStore {
   locationAllowed: Boolean
-  coor: [number, number]
+  coor: [number, number] | []
   locationHistory: LocationData[]
   loadingGetLocation: Boolean
 }
@@ -11,7 +11,7 @@ export const useUserInfoStore = defineStore('userInfo', {
   state: () :userInfoStore => {
     return {
       locationAllowed: false,
-      coor: [0,0],
+      coor: [],
       locationHistory: [],
       loadingGetLocation: false
     }
@@ -30,7 +30,13 @@ export const useUserInfoStore = defineStore('userInfo', {
       this.loadingGetLocation = status
     },
     addLocationHistory(data: LocationData){
+      console.log(this.locationHistory.length >= 20)
+      if(this.locationHistory.length >= 20){
+        this.locationHistory.pop()
+      }
+
       this.locationHistory.push(data)
+      
     },
     updateLocationHistory(idx: number, data: LocationData){
       this.locationHistory[idx] = data
