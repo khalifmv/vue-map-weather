@@ -4,6 +4,7 @@ export interface UserLocation {
 }
 
 export async function getUserLocation(): Promise<UserLocation> {
+    console.log('Getting user location...');
     if (!navigator.geolocation) {
         throw new Error('Geolocation is not supported by this browser.');
     }
