@@ -11,7 +11,7 @@ const locationHistory = computed(() => [...userInfo.locationHistory].reverse())
 <template>
   <Card class="w-full flex flex-col bg-gray-200 border border-white h-full max-h-[650px] overflow-y-auto">
     <Title :size="'sm'">Riwayat lokasi</Title>
-    <div class="mt-4">
+    <div class="mt-4 w-full h-full">
       <div v-if="userInfo.loadingGetLocation">Loading</div>
       <div v-for="value in locationHistory" :key="value.location.latitide" class="p-2 rounded-lg bg-white mb-2 flex flex-col gap-1">
         <div class="flex justify-between items-center">
@@ -34,6 +34,10 @@ const locationHistory = computed(() => [...userInfo.locationHistory].reverse())
           </div>
         </div>
         
+      </div>
+
+      <div v-if="locationHistory.length < 1" class="flex w-full h-full justify-center items-center">
+        <p class="text-sm opacity-30">Klik 2x pada peta untuk melihat cuaca daerah tertentu.</p>
       </div>
     </div>
   </Card>

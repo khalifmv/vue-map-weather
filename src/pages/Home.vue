@@ -2,6 +2,7 @@
 import LocationHistory from "../components/LocationHistory.vue";
 import Map from "../components/Map.vue"
 import MyLocationCard from "../components/MyLocationCard.vue";
+import TabBar from "../components/ui/TabBar.vue";
 </script>
 
 <template>
@@ -16,6 +17,7 @@ import MyLocationCard from "../components/MyLocationCard.vue";
       </div>
     </div>
     <div class="absolute bottom-0 left-0 z-[9999]">
+      <!-- <TabBar/> -->
       <p>Github</p>
     </div>
     <Map />
