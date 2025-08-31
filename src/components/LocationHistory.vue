@@ -9,7 +9,7 @@ const locationHistory = computed(() => [...userInfo.locationHistory].reverse())
 </script>
 
 <template>
-  <Card class="w-full flex flex-col bg-gray-200 border border-white h-full max-h-[650px] overflow-y-auto">
+  <Card class="w-full flex flex-col bg-gray-200 border border-white h-full max-h-[300px] md:max-h-[650px] overflow-y-auto">
     <Title :size="'sm'">Riwayat lokasi</Title>
     <div class="mt-4 w-full h-full">
       <div v-if="userInfo.loadingGetLocation">Loading</div>
