@@ -20,8 +20,10 @@ const circle = ref({
 let activeMarker = null;
 
 onMounted(async () => {
-    const userLocation = await getUserLocation();
+    const userLocation = await getUserLocation().then((res)=>{return res}).catch((err)=>{return null});
+    
     if (userLocation) {
+        userInfo.setLocationAllowed(true)
         const arrLatLong = [userLocation.latitude, userLocation.longitude];
         center.value = arrLatLong;
         userInfo.updateCoor(arrLatLong);
@@ -59,6 +61,8 @@ onMounted(async () => {
                 clearInterval(checkMap);
             }
         }, 100);
+    } else {
+        userInfo.setLocationAllowed(false)
     }
 });
 

@@ -10,7 +10,7 @@ interface userInfoStore {
 export const useUserInfoStore = defineStore('userInfo', {
   state: () :userInfoStore => {
     return {
-      locationAllowed: false,
+      locationAllowed: true,
       coor: [],
       locationHistory: [],
       loadingGetLocation: false
@@ -46,6 +46,9 @@ export const useUserInfoStore = defineStore('userInfo', {
     },
     clearLocationHistory(){
       this.locationHistory = []
+    },
+    setLocationAllowed(status: Boolean){
+      this.locationAllowed = status
     }
   }
 })

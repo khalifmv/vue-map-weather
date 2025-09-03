@@ -34,7 +34,7 @@ const { data, error, isLoading } = useQuery({
       </div>
 
       <div v-if="isLoading">Loading weather...</div>
-      <div v-else-if="error">Error: {{ error!.message }}</div>
+      <div v-else-if="!userInfo.locationAllowed">Error: Location access denied, please enable location services.</div>
       <template v-if="!isLoading && !error && data">
         <div class="flex flex-col gap-1">
           <Title :size="'lg'">{{ data.data[0].location.city }}</Title>
