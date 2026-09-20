@@ -2,6 +2,7 @@
 import LocationHistory from "../components/LocationHistory.vue";
 import Map from "../components/Map.vue"
 import MyLocationCard from "../components/MyLocationCard.vue";
+import LocationPermissionModal from "../components/LocationPermissionModal.vue";
 import Tab from "../components/ui/Tab.vue";
 import Tabs from "../components/ui/Tabs.vue";
 import { ref, onMounted, onUnmounted } from "vue";
@@ -48,6 +49,7 @@ onUnmounted(() => {
       <p class="hidden md:block">Github</p>
     </div>
     <Map />
+    <LocationPermissionModal />
   </div>
 </template>
 

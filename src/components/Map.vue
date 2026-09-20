@@ -1,72 +1,84 @@
 <script setup>
 import "leaflet/dist/leaflet.css";
-import { ref, onMounted, nextTick, watch } from "vue";
-import {L, latLng} from 'leaflet'
+import { ref, onMounted, onUnmounted, watch } from "vue";
+import { latLng } from 'leaflet'
 import { LMap, LTileLayer, LMarker, LCircle } from "@vue-leaflet/vue-leaflet";
-import { getUserLocation } from "../helper/GetUserLocation";
 import { useUserInfoStore } from '../stores/User';
+import { useLocation } from '../composables/useLocation';
 import { fetchWeather } from "../api/weather";
 
 const userInfo = useUserInfoStore()
+const { initLocation } = useLocation()
 
-const zoom = ref(5);
-const center = ref([-7.2575, 112.7521]);
+const DEFAULT_CENTER = [-7.2575, 112.7521];
+const DEFAULT_ZOOM = 5;
+
+// A city level estimate deserves a wider circle than a real fix.
+const PRECISE_VIEW = { zoom: 12, radius: 2000 };
+const ESTIMATED_VIEW = { zoom: 10, radius: 15000 };
+
+const zoom = ref(DEFAULT_ZOOM);
+const center = ref(DEFAULT_CENTER);
 const mapRef = ref(null);
-const markerLatLng = ref([0,0])
-const circle = ref({
-    center: latLng(0,0),
-    radius: 40
-})
-let activeMarker = null;
+const mapInstance = ref(null);
+const markerLatLng = ref(null);
+const circle = ref(null);
 
-onMounted(async () => {
-    const userLocation = await getUserLocation().then((res)=>{return res}).catch((err)=>{return null});
-    
-    if (userLocation) {
-        userInfo.setLocationAllowed(true)
-        const arrLatLong = [userLocation.latitude, userLocation.longitude];
-        center.value = arrLatLong;
-        userInfo.updateCoor(arrLatLong);
-        await nextTick();
-        zoom.value = 12;
-        circle.value = {
-            center: latLng(arrLatLong[0], arrLatLong[1]),
-            radius: 2000,
-        };
-        const checkMap = setInterval(() => {
-            if (mapRef.value?.leafletObject) {
-                const map = mapRef.value.leafletObject;
-                console.log("Leaflet map instance:", map);
+let checkMap = null;
 
-                map.doubleClickZoom.disable();
-                map.on("dblclick", async (e) => {
-                    console.log("User double clicked at:", e.latlng);
-                    markerLatLng.value = [e.latlng.lat, e.latlng.lng];
-                    try {
-                        userInfo.setLoadingOfGetLocation(true)
-                        const weather = await fetchWeather({
-                            lat: e.latlng.lat,
-                            long: e.latlng.lng,
-                        });
-                        console.log("Weather data:", weather);
-                        userInfo.setLoadingOfGetLocation(false)
-                        userInfo.addLocationHistory(weather.data[0]);
-                    } catch (error) {
-                        userInfo.setLoadingOfGetLocation(false)
-                        console.error("Error fetching weather:", error);
-                    }
+function setupMap() {
+    checkMap = setInterval(() => {
+        if (!mapRef.value?.leafletObject) return;
+        clearInterval(checkMap);
+        checkMap = null;
+
+        const map = mapRef.value.leafletObject;
+        mapInstance.value = map;
+
+        map.doubleClickZoom.disable();
+        map.on("dblclick", async (e) => {
+            markerLatLng.value = [e.latlng.lat, e.latlng.lng];
+            try {
+                userInfo.setLoadingOfGetLocation(true)
+                const weather = await fetchWeather({
+                    lat: e.latlng.lat,
+                    long: e.latlng.lng,
                 });
-
-                map.flyTo(center.value, zoom.value);
-                clearInterval(checkMap);
+                userInfo.setLoadingOfGetLocation(false)
+                userInfo.addLocationHistory(weather.data[0]);
+            } catch (error) {
+                userInfo.setLoadingOfGetLocation(false)
+                console.error("Error fetching weather:", error);
             }
-        }, 100);
-    } else {
-        userInfo.setLocationAllowed(false)
-    }
+        });
+
+        map.flyTo(center.value, zoom.value);
+    }, 100);
+}
+
+// Fires for the IP estimate first and again if a precise fix lands later.
+watch(() => userInfo.coor, (coor) => {
+    if (typeof coor[0] !== "number" || typeof coor[1] !== "number") return;
+
+    const view = userInfo.locationSource === "gps" ? PRECISE_VIEW : ESTIMATED_VIEW;
+    center.value = [coor[0], coor[1]];
+    zoom.value = view.zoom;
+    circle.value = {
+        center: latLng(coor[0], coor[1]),
+        radius: view.radius,
+    };
+    mapInstance.value?.flyTo(center.value, zoom.value);
+}, { deep: true });
+
+onMounted(() => {
+    // The map is set up regardless of whether we ever learn where the user is,
+    // double click to pick a point always works.
+    setupMap();
+    initLocation();
 });
 
-watch(mapRef, () => {
+onUnmounted(() => {
+    if (checkMap) clearInterval(checkMap);
 });
 </script>
 
@@ -74,10 +86,12 @@ watch(mapRef, () => {
     <div style="height:100vh; width:100vw">
         <l-map ref="mapRef" v-model:zoom="zoom" :center="center">
             <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"
-                name="OpenStreetMap">
+                name="OpenStreetMap"
+                attribution="&copy; Kontributor OpenStreetMap">
             </l-tile-layer>
-            <l-marker :lat-lng="markerLatLng" ></l-marker>
+            <l-marker v-if="markerLatLng" :lat-lng="markerLatLng"></l-marker>
             <l-circle
+                v-if="circle"
                 :lat-lng="circle.center"
                 :radius="circle.radius"
             />
