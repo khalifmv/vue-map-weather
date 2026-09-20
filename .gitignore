@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 /npm-cache
+
+# local npm cache
+npm-cache/
+.gh-pages-out/

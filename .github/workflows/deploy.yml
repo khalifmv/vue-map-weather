@@ -1,0 +1,74 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Lets you redeploy the current main from the Actions tab without a new commit.
+  workflow_dispatch:
+
+# Needed to push the built site to the gh-pages branch.
+permissions:
+  contents: write
+
+# A newer push supersedes an in flight one, but let a running deploy finish so
+# the branch is never left half written.
+concurrency:
+  group: deploy-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # vue-tsc runs here as part of the build, so a type error fails the
+      # deploy instead of shipping.
+      - name: Build
+        run: npm run build
+
+      - name: Publish to gh-pages
+        run: |
+          set -euo pipefail
+
+          # GitHub Pages runs Jekyll on branch deploys, which drops paths
+          # starting with an underscore. This opts out.
+          touch dist/.nojekyll
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          # Work in a worktree so the branch keeps its history instead of being
+          # recreated from scratch on every deploy.
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git fetch --depth=1 origin gh-pages
+            git worktree add gh-pages-out origin/gh-pages
+            git -C gh-pages-out checkout -B gh-pages
+          else
+            git worktree add --orphan -b gh-pages gh-pages-out
+          fi
+
+          # Replace the published files, but never touch the worktree's own git
+          # link or we lose the branch.
+          find gh-pages-out -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -R dist/. gh-pages-out/
+
+          cd gh-pages-out
+          git add -A
+          if git diff --staged --quiet; then
+            echo 'Build output is unchanged, nothing to publish.'
+            exit 0
+          fi
+          # Record which source commit produced this build.
+          git commit -m "deploy: ${GITHUB_SHA::7}"
+          git push origin gh-pages
